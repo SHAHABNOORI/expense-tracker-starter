@@ -11,17 +11,12 @@ function Summary({ transactions }) {
 
   return (
     <div className="summary">
-      <div className="summary-card">
-        <h3>Income</h3>
-        <p className="income-amount">${totalIncome}</p>
-      </div>
-      <div className="summary-card">
-        <h3>Expenses</h3>
-        <p className="expense-amount">${totalExpenses}</p>
-      </div>
-      <div className="summary-card">
-        <h3>Balance</h3>
-        <p className="balance-amount">${balance}</p>
+      <p className="summary-balance-label">Balance</p>
+      <p className="summary-balance-amount">{balance < 0 ? `-$${Math.abs(balance).toLocaleString()}` : `$${balance.toLocaleString()}`}</p>
+      <div className="summary-sub">
+        <span className="income-stat">↑ ${totalIncome.toLocaleString()}</span>
+        <span className="summary-dot">·</span>
+        <span className="expense-stat">↓ ${totalExpenses.toLocaleString()}</span>
       </div>
     </div>
   );

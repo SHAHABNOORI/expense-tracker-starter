@@ -48,7 +48,7 @@ function TransactionList({ transactions, onDelete }) {
               <td>{t.description}</td>
               <td>{t.category}</td>
               <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
-                {t.type === "income" ? "+" : "-"}${t.amount}
+                {t.type === "income" ? "+" : "-"}${t.amount.toLocaleString()}
               </td>
               <td>
                 <button
@@ -57,7 +57,7 @@ function TransactionList({ transactions, onDelete }) {
                     if (window.confirm("Delete this transaction?")) onDelete(t.id);
                   }}
                 >
-                  Delete
+                  ×
                 </button>
               </td>
             </tr>
