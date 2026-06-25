@@ -6,8 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the starter project for a Claude Code course (codewithmosh.com). It is a small React expense tracker that **intentionally has a bug, poor UI, and messy code** — these are meant to be fixed iteratively over the course, not necessarily all at once. Don't assume sloppiness elsewhere in the repo is accidental; check with the user before doing a broad cleanup.
 
-The known intentional bug: `amount` on transactions is stored/typed as a string (`<input type="number">` values from `e.target.value` are strings, and the seed data in `src/App.jsx` uses string literals like `"5000"`). The income/expense/balance totals are computed with `reduce((sum, t) => sum + t.amount, 0)`, which string-concatenates instead of summing numerically.
-
 ## Commands
 
 ```bash
@@ -24,11 +22,17 @@ Node engine requirement: `vite@7` and `@vitejs/plugin-react@5` require Node `^20
 
 ## Architecture
 
-The entire application is a single component: `src/App.jsx`. There is no router, no state management library, no API layer, and no component splitting — all state (`transactions`, the add-transaction form fields, and the two filter selects) lives in `useState` hooks at the top of `App`, and all UI (summary cards, add-transaction form, filterable transactions table) is rendered in one JSX tree.
+There is no router, no state management library, and no API layer. Transactions are in-memory only (seeded with hardcoded sample data in `App.jsx`); nothing is persisted and there is no backend.
 
-- `src/main.jsx` — standard Vite/React entry point, mounts `<App />` into `#root`.
-- `src/App.jsx` — all application logic and markup.
+The app is split into four components:
+
+- **`App.jsx`** — holds the `transactions` array in state (the only shared state). Passes it down to children and provides an `onAdd` callback to `TransactionForm`.
+- **`Summary.jsx`** — receives `transactions`, derives `totalIncome`, `totalExpenses`, and `balance` internally, and renders the three summary cards.
+- **`TransactionForm.jsx`** — owns its own form state (`description`, `amount`, `type`, `category`). On submit, calls `onAdd(transaction)` with a fully constructed transaction object (amount already converted to `Number`).
+- **`TransactionList.jsx`** — owns its own filter state (`filterType`, `filterCategory`). Receives `transactions`, applies filters locally, and renders the table.
+
+Supporting files:
+- `src/main.jsx` — Vite/React entry point, mounts `<App />` into `#root`.
 - `src/App.css` / `src/index.css` — plain CSS, no CSS modules or utility framework.
-- Transactions are in-memory only (seeded with hardcoded sample data in `App.jsx`); nothing is persisted, and there is no backend.
 
-When making changes, expect to edit `App.jsx` directly rather than looking for a separate hooks/services/components layer — none exists yet.
+The `categories` array (`["food", "housing", ...]`) is currently duplicated in `TransactionForm` and `TransactionList`; it has not been extracted to a shared location yet.
